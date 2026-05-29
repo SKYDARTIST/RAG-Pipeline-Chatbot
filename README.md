@@ -14,6 +14,12 @@ Built end-to-end in self-hosted n8n (v2.22.5), running locally to avoid the clou
 
 The work was not "drop in nodes and done" — getting it stable meant debugging three real issues (see [Engineering challenges solved](#engineering-challenges-solved)): a `pdf-parse` dependency conflict, embedding-dimension matching, and Gemini's tool-calling behaviour inside the AI Agent.
 
+Full build notes:
+
+- [`docs/architecture.md`](docs/architecture.md) — system flow, runtime decisions, security posture, and hardening backlog.
+- [`docs/workflow.md`](docs/workflow.md) — build phases, debugging log, setup checklist, and verification notes.
+- [`CHANGELOG.md`](CHANGELOG.md) — iteration history for the repository.
+
 ## What it does
 
 Two pipelines share a single Pinecone index:
@@ -49,6 +55,8 @@ RETRIEVE  Chat Trigger → AI Agent ── Chat Model (Gemini 2.5 Flash Lite)
 
 The two pipelines never connect on the canvas — they are linked through the shared Pinecone index (`n8n-gemini`, namespace `Book`). One writes vectors, the other reads them.
 
+See [`docs/architecture.md`](docs/architecture.md) for the reviewer-facing architecture writeup.
+
 ## Engineering challenges solved
 
 These are the problems that turned a tutorial into real debugging:
@@ -83,6 +91,8 @@ These are the problems that turned a tutorial into real debugging:
 ## Verification
 
 Confirmed working end-to-end: a test PDF placed in the watched folder was ingested into Pinecone, and the chat agent answered questions using only the retrieved content. A successful run shows the Pinecone retrieval tool firing in the execution log and an answer drawn directly from the source document.
+
+Because this repository exports an n8n workflow rather than an application codebase, verification is import-and-run based instead of `npm test` based. The committed JSON is validated as parseable JSON, and the runtime test is documented in [`docs/workflow.md`](docs/workflow.md).
 
 ## Use cases
 
